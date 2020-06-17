@@ -26,8 +26,6 @@ namespace SerialPortListener.Serial
             if (_currentSerialSettings.PortNameCollection.Length > 0)
                 _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
 
-            if(ConfigurationManager.AppSettings.Get("COMPortNumber") != "")
-                _currentSerialSettings.PortName = ConfigurationManager.AppSettings.Get("COMPortNumber");
         }
 
 
