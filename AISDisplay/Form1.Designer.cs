@@ -43,8 +43,8 @@ namespace AISDisplay
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.AISDataTable = new System.Windows.Forms.DataGridView();
             this._Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._MMSI = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -101,13 +101,13 @@ namespace AISDisplay
             this.AISDataTable.Name = "AISDataTable";
             this.AISDataTable.ReadOnly = true;
             this.AISDataTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
-            this.AISDataTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
+            this.AISDataTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.AISDataTable.RowTemplate.Height = 25;
             this.AISDataTable.RowTemplate.ReadOnly = true;
             this.AISDataTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.AISDataTable.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.AISDataTable.Size = new System.Drawing.Size(2588, 1306);
+            this.AISDataTable.Size = new System.Drawing.Size(2588, 1283);
             this.AISDataTable.TabIndex = 0;
             this.AISDataTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -191,6 +191,7 @@ namespace AISDisplay
             this._UTCDateTime.Name = "_UTCDateTime";
             this._UTCDateTime.ReadOnly = true;
             this._UTCDateTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._UTCDateTime.Width = 109;
             // 
             // yourDataTable
             // 
@@ -219,9 +220,9 @@ namespace AISDisplay
             this.yourDataTable.Name = "yourDataTable";
             this.yourDataTable.ReadOnly = true;
             this.yourDataTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.yourDataTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.yourDataTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.yourDataTable.RowTemplate.Height = 25;
             this.yourDataTable.RowTemplate.ReadOnly = true;
             this.yourDataTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -297,7 +298,7 @@ namespace AISDisplay
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(2588, 1426);
+            this.ClientSize = new System.Drawing.Size(2588, 1174);
             this.ControlBox = false;
             this.Controls.Add(this.yourDataTable);
             this.Controls.Add(this.AISDataTable);

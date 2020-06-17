@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2CEB9ADB-FF22-4DF1-A08E-F149FF987CE3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>AISSystemApp</RootNamespace>
-    <AssemblyName>AISSystemApp</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>AISDisplay</RootNamespace>
+    <AssemblyName>AISDisplay</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>AISSystemApp.Program</StartupObject>
+    <StartupObject>AISDisplay.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lambda2Js.Signed, Version=3.1.3.0, Culture=neutral, PublicKeyToken=9ba16f7edfc48fe6, processorArchitecture=MSIL">
