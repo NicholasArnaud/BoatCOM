@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO.Ports;
 using System.ComponentModel;
-using System.Xml;
+
 
 namespace SerialPortListener.Serial
 {
@@ -45,7 +42,7 @@ namespace SerialPortListener.Serial
         public int BaudRate
         {
             get { return _baudRate; }
-            set 
+            set
             {
                 if (_baudRate != value)
                 {
@@ -61,7 +58,7 @@ namespace SerialPortListener.Serial
         public Parity Parity
         {
             get { return _parity; }
-            set 
+            set
             {
                 if (_parity != value)
                 {
@@ -126,7 +123,6 @@ namespace SerialPortListener.Serial
             get { return _dataBitsCollection; }
             set { _dataBitsCollection = value; }
         }
-
         #endregion
 
         #region Methods
@@ -207,46 +203,10 @@ namespace SerialPortListener.Serial
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                SerializeDataToXML();
             }
-                
+
         }
 
-
-        private void SerializeDataToXML()
-        {
-            XmlTextWriter writer = new XmlTextWriter("COMSettings.xml", Encoding.UTF8);
-            writer.WriteStartDocument(true);
-            writer.Formatting = Formatting.Indented;
-            writer.Indentation = 2;
-            writer.WriteStartElement("COMPorts");
-            createNode(_portName, _baudRate.ToString(), _dataBits.ToString(), _parity.ToString(), writer);
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Close();
-        }
-        private void createNode(string pName, string pBaudRate, string pDataBits, string pParity, XmlTextWriter writer)
-        {
-            writer.WriteStartElement("COMPort");
-            //NAME
-            writer.WriteStartElement("COMPort_Name");
-            writer.WriteString(pName);
-            writer.WriteEndElement();
-            //BAUDRATE
-            writer.WriteStartElement("Baud_Rate");
-            writer.WriteString(pBaudRate);
-            writer.WriteEndElement();
-            //DataBits
-            writer.WriteStartElement("Data_Bits");
-            writer.WriteString(pDataBits);
-            writer.WriteEndElement();
-            //Parity
-            writer.WriteStartElement("Parity");
-            writer.WriteString(pParity);
-            writer.WriteEndElement();
-
-            writer.WriteEndElement();
-        }
         #endregion
     }
 }

@@ -97,6 +97,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerialPortManager.cs" />
     <Compile Include="SerialSettings.cs" />
+    <Compile Include="XMLManager.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

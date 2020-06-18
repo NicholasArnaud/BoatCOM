@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using SerialPortListener.Serial;
@@ -37,7 +36,9 @@ namespace AISDisplay
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();
+            XMLManager xmlManager = new XMLManager();
             SerialSettings mySerialSettings = _spManager.CurrentSerialSettings;
+            XMLManager.SerializeDataToXML(mySerialSettings);
             _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }

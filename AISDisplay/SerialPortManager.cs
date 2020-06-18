@@ -6,8 +6,8 @@ using System.IO.Ports;
 using System.Reflection;
 using System.ComponentModel;
 using System.Configuration;
-using System.Threading;
 using System.IO;
+using AISDisplay;
 
 namespace SerialPortListener.Serial
 {
@@ -102,6 +102,7 @@ namespace SerialPortListener.Serial
             // Subscribe to event and open serial port for data
             _serialPort.DataReceived += new SerialDataReceivedEventHandler(_serialPort_DataReceived);
             _serialPort.Open();
+           
         }
 
         /// <summary>
