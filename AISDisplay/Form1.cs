@@ -9,7 +9,9 @@ namespace AISDisplay
     //TODO:: SAVE TO FILES S
     public partial class Form1 : Form
     {
+        private readonly XMLManager xmlManager = new XMLManager();
         SerialPortManager _spManager;
+        SerialSettings mySerialSettings;
         AISDataCollection AISDataCollectionClass = new AISDataCollection();
         List<AISData> AISDataList = new List<AISData>();
         AISData YourAISShipData = new AISData();
@@ -29,16 +31,15 @@ namespace AISDisplay
             }
             catch (ArgumentException e)
             {
-                MessageBox.Show("No port was found. Please insert a port and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
         }
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();
-            XMLManager xmlManager = new XMLManager();
-            SerialSettings mySerialSettings = _spManager.CurrentSerialSettings;
-            XMLManager.SerializeDataToXML(mySerialSettings);
+            mySerialSettings = _spManager.CurrentSerialSettings;
+            XMLManager.serializeDataToXML(mySerialSettings);
             _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }
@@ -46,6 +47,7 @@ namespace AISDisplay
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            
             _spManager.StopListening();
             _spManager.Dispose();
         }
@@ -75,6 +77,7 @@ namespace AISDisplay
 
         private void UpdateTable()
         {
+            
             if (stringTmpData.Contains("\n"))
             {
                 string[] dataToRead = stringTmpData.Split('\n');
@@ -148,6 +151,8 @@ namespace AISDisplay
         private void timer1_Tick(object sender, EventArgs e)
         {
             UpdateTable();
+            if (xmlManager._serialSettings != mySerialSettings)
+                mySerialSettings = xmlManager._serialSettings;
         }
 
 

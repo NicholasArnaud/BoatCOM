@@ -8,6 +8,7 @@ using SerialPortListener.Serial;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.ComponentModel;
+using System.IO.Ports;
 
 namespace AISDisplay
 {
@@ -23,6 +24,12 @@ namespace AISDisplay
             Task.Factory.StartNew(() => VerifyXMLFile());
             
         }
+
+        public SerialSettings _serialSettings
+        {
+            get { return serialSettings; }
+        }
+
 
         public static void VerifyXMLFile()
         {
@@ -71,6 +78,7 @@ namespace AISDisplay
             {
                 case (WatcherChangeTypes)ListChangedType.ItemChanged:
                     {
+                        updateSettingsFromXML();
                         break;
                     }
                     
@@ -78,7 +86,7 @@ namespace AISDisplay
                     break;
                 case (WatcherChangeTypes)ListChangedType.ItemDeleted:
                     {
-                        SerializeDataToXML(serialSettings);
+                        serializeDataToXML(serialSettings);
                         break;
                     }
                     
@@ -95,7 +103,7 @@ namespace AISDisplay
             Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
         }
 
-        public static void SerializeDataToXML(SerialSettings _spSettings)
+        public static void serializeDataToXML(SerialSettings _spSettings)
         {
             serialSettings = _spSettings;
             XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8);
@@ -204,7 +212,15 @@ namespace AISDisplay
         }
         public static SerialSettings updateSettingsFromXML()
         {
-            //TODO:: This
+            //READ FILE AND SET THE SETTINGS WITHIN THIS CLASS AND RETURN THAT. RETURN AND SET FULL VALUES
+            XDocument xmlDoc = XDocument.Load(fileName);
+            XElement xRootElement = xmlDoc.Root.Element("COMPort");
+            serialSettings.PortName = xRootElement.Element("COMPort_Name").Value;
+            serialSettings.BaudRate = int.Parse(xRootElement.Element("Baud_Rate").Value);
+            serialSettings.DataBits = int.Parse(xRootElement.Element("Data_Bits").Value);
+            serialSettings.Parity =  (Parity)Enum.Parse(typeof(Parity), xRootElement.Element("Parity").Value, true);
+
+
             return serialSettings;
         }
 
