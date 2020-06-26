@@ -6,7 +6,8 @@ using SerialPortListener.Serial;
 
 namespace AISDisplay
 {
-    //TODO:: SAVE TO FILES S
+    //TODO:: SAVE INCOMING DATA TO TMP FILES
+    //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
     public partial class Form1 : Form
     {
         private readonly XMLManager xmlManager = new XMLManager();
@@ -89,7 +90,9 @@ namespace AISDisplay
                     if (i.Contains("\r") &&
                         (i.Contains("!") || i.Contains("$")))
                     {
-                        AISDataList = AISDataCollectionClass.ParseToTextFromCOM(i);
+                        AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0)? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
+                        if (AISDataList.Count == 0)
+                            return;
                         YourAISShipData = AISDataList[0];
                         AISDataList.RemoveAt(0);
                         if (AISDataList.Count >= 1)
@@ -99,6 +102,7 @@ namespace AISDisplay
                     }
 
                 }
+                //stringTmpData = "";
                 AISDataTable.Update();
             }
         }

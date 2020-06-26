@@ -181,7 +181,8 @@ public class AISDataCollection : ObservableCollection<AISData>
         //    SortedList.Insert(0, tmpData);
         //}
         //return SortedList;
-        return CleanAndSortAISDataList();
+        List<AISData> returnList = CleanAndSortAISDataList();
+        return returnList;
     }
 
     private double DegeressToRadians(double degrees)
