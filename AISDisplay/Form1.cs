@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using SerialPortListener.Serial;
 
 namespace AISDisplay
 {
-    //TODO:: SAVE TO FILES S
+    //TODO:: SAVE INCOMING DATA TO TMP FILES
+    //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
     public partial class Form1 : Form
     {
+        private readonly XMLManager xmlManager = new XMLManager();
         SerialPortManager _spManager;
+        SerialSettings mySerialSettings;
         AISDataCollection AISDataCollectionClass = new AISDataCollection();
         List<AISData> AISDataList = new List<AISData>();
         AISData YourAISShipData = new AISData();
@@ -30,14 +32,15 @@ namespace AISDisplay
             }
             catch (ArgumentException e)
             {
-                MessageBox.Show("No port was found. Please insert a port and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
         }
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();
-            SerialSettings mySerialSettings = _spManager.CurrentSerialSettings;
+            mySerialSettings = _spManager.CurrentSerialSettings;
+            XMLManager.serializeDataToXML(mySerialSettings);
             _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }
@@ -45,6 +48,7 @@ namespace AISDisplay
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            
             _spManager.StopListening();
             _spManager.Dispose();
         }
@@ -74,6 +78,7 @@ namespace AISDisplay
 
         private void UpdateTable()
         {
+            
             if (stringTmpData.Contains("\n"))
             {
                 string[] dataToRead = stringTmpData.Split('\n');
@@ -85,7 +90,9 @@ namespace AISDisplay
                     if (i.Contains("\r") &&
                         (i.Contains("!") || i.Contains("$")))
                     {
-                        AISDataList = AISDataCollectionClass.ParseToTextFromCOM(i);
+                        AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0)? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
+                        if (AISDataList.Count == 0)
+                            return;
                         YourAISShipData = AISDataList[0];
                         AISDataList.RemoveAt(0);
                         if (AISDataList.Count >= 1)
@@ -95,6 +102,7 @@ namespace AISDisplay
                     }
 
                 }
+                //stringTmpData = "";
                 AISDataTable.Update();
             }
         }
@@ -147,6 +155,8 @@ namespace AISDisplay
         private void timer1_Tick(object sender, EventArgs e)
         {
             UpdateTable();
+            if (xmlManager._serialSettings != mySerialSettings)
+                mySerialSettings = xmlManager._serialSettings;
         }
 
 

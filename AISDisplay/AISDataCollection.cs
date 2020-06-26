@@ -4,10 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Windows;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpAIS;
 
 public class AISDataCollection : ObservableCollection<AISData>
@@ -184,7 +181,8 @@ public class AISDataCollection : ObservableCollection<AISData>
         //    SortedList.Insert(0, tmpData);
         //}
         //return SortedList;
-        return CleanAndSortAISDataList();
+        List<AISData> returnList = CleanAndSortAISDataList();
+        return returnList;
     }
 
     private double DegeressToRadians(double degrees)
