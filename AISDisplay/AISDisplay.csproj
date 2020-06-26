@@ -132,5 +132,9 @@
       <Name>SharpAIS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="_AIS.txt" />
+    <Content Include="_BaseStation.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

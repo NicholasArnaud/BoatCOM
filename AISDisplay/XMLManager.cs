@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.ComponentModel;
 using System.IO.Ports;
+using System.Windows.Forms;
 
 namespace AISDisplay
 {
@@ -213,13 +214,22 @@ namespace AISDisplay
         public static SerialSettings updateSettingsFromXML()
         {
             //READ FILE AND SET THE SETTINGS WITHIN THIS CLASS AND RETURN THAT. RETURN AND SET FULL VALUES
-            XDocument xmlDoc = XDocument.Load(fileName);
-            XElement xRootElement = xmlDoc.Root.Element("COMPort");
-            serialSettings.PortName = xRootElement.Element("COMPort_Name").Value;
-            serialSettings.BaudRate = int.Parse(xRootElement.Element("Baud_Rate").Value);
-            serialSettings.DataBits = int.Parse(xRootElement.Element("Data_Bits").Value);
-            serialSettings.Parity =  (Parity)Enum.Parse(typeof(Parity), xRootElement.Element("Parity").Value, true);
+            //WE NEED TO CHECK IF COMPORT IS CURRENTLY BEING USED BY ANOTHER PROCESS
+            try
+            {
+                XDocument xmlDoc = XDocument.Load(fileName);
+                XElement xRootElement = xmlDoc.Root.Element("COMPort");
+                serialSettings.PortName = xRootElement.Element("COMPort_Name").Value;
+                serialSettings.BaudRate = int.Parse(xRootElement.Element("Baud_Rate").Value);
+                serialSettings.DataBits = int.Parse(xRootElement.Element("Data_Bits").Value);
+                serialSettings.Parity = (Parity)Enum.Parse(typeof(Parity), xRootElement.Element("Parity").Value, true);
 
+            }
+            catch
+            {
+                MessageBox.Show("There was an issue with settings. Settings reverted.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                serializeDataToXML(serialSettings);
+            }
 
             return serialSettings;
         }
