@@ -9,6 +9,7 @@ namespace AISDisplay
 {
     //TODO:: SAVE INCOMING DATA TO TMP FILES
     //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
+    //TODO:: HAVE XML SETTINGS READ AND USED FIRST IF EXISTING 
     public partial class Form1 : Form
     {
         private readonly XMLManager xmlManager = new XMLManager();
@@ -33,6 +34,11 @@ namespace AISDisplay
                 Console.WriteLine("IOException source: {0}", e.Source);
             }
             catch (ArgumentException e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+            }
+            catch(UnauthorizedAccessException e)
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
