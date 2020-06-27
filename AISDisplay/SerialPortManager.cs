@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO.Ports;
 using System.Reflection;
 using System.ComponentModel;
-using System.Configuration;
-using System.IO;
-using AISDisplay;
 
 namespace SerialPortListener.Serial
 {
@@ -67,6 +61,7 @@ namespace SerialPortListener.Serial
 
         void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            
             int dataLength = _serialPort.BytesToRead;
             byte[] data = new byte[dataLength];
             int nbrDataRead = _serialPort.Read(data, 0, dataLength);

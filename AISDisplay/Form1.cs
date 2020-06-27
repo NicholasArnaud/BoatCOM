@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+//using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using SerialPortListener.Serial;
@@ -16,7 +17,8 @@ namespace AISDisplay
         AISDataCollection AISDataCollectionClass = new AISDataCollection();
         List<AISData> AISDataList = new List<AISData>();
         AISData YourAISShipData = new AISData();
-        private string stringTmpData = "";
+        private string strReadFromCOM = "";
+        List<string> strListReadFromCOM = new List<string>();
 
         public Form1()
         {
@@ -48,7 +50,7 @@ namespace AISDisplay
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            
+
             _spManager.StopListening();
             _spManager.Dispose();
         }
@@ -62,26 +64,60 @@ namespace AISDisplay
                 return;
             }
 
-            int maxParseLength = 1000; // maximum text length in text
-            if (stringTmpData.Length > maxParseLength)
-            {
-                stringTmpData = stringTmpData.Split(new[] { '\n' }, 2)[1];
-
-            }
-
             //This application is connected to a GPS sending ASCCI characters, so data is converted to text
             string str = Encoding.ASCII.GetString(e.Data);
-            stringTmpData += str;
 
+            //int maxParseLength = 1000; // maximum text length in text
+            //if (stringTmpData.Length > maxParseLength)
 
+                //if(str == "\n" && strReadFromCOM.Contains("\n"))
+                //{
+                //    strListReadFromCOM.Add(strReadFromCOM.Substring(strReadFromCOM.LastIndexOf("\n") + 1));
+                //}
+                if (str.Contains("\n")) //&& !strReadFromCOM.Contains("\n"))
+            {
+                //Shows the lines generated and should display the same as the NemaFileReader Programm
+                //Debug.Print(strReadFromCOM);
+
+                strListReadFromCOM.Add(strReadFromCOM);
+                strReadFromCOM = "";
+            }
+            else
+            {
+                strReadFromCOM += str;
+            }
         }
 
         private void UpdateTable()
         {
-            
-            if (stringTmpData.Contains("\n"))
+            if (strListReadFromCOM.Count > 0)
             {
-                string[] dataToRead = stringTmpData.Split('\n');
+
+                foreach (string LineInfo in strListReadFromCOM)
+                {
+                    if (!LineInfo.Contains("\r"))
+                        continue;
+                    AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(LineInfo).Count > 0) ? AISDataCollectionClass.ParseToTextFromCOM(LineInfo) : new List<AISData>();
+                    if (AISDataList.Count == 0)
+                        continue;
+                    YourAISShipData = AISDataList[0];
+                    AISDataList.RemoveAt(0);
+                    if (AISDataList.Count >= 1)
+                        LinkTableData(AISDataList);
+                    if (YourAISShipData != null)
+                        LinkTableData(YourAISShipData);
+
+                }
+                if (strListReadFromCOM.Count >= 35)
+                    strListReadFromCOM.RemoveRange(0, 20);
+
+                AISDataTable.Update();
+            }
+            
+            /*
+            if (strReadFromCOM.Contains("\n"))
+            {
+                string[] dataToRead = strReadFromCOM.Split('\n');
                 foreach (string i in dataToRead)
                 {
                     //CHECK TO ENSURE STRING CAPTURED THE ENTIRE LINE TO BE PARSED
@@ -90,7 +126,7 @@ namespace AISDisplay
                     if (i.Contains("\r") &&
                         (i.Contains("!") || i.Contains("$")))
                     {
-                        AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0)? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
+                        AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0) ? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
                         if (AISDataList.Count == 0)
                             return;
                         YourAISShipData = AISDataList[0];
@@ -102,9 +138,10 @@ namespace AISDisplay
                     }
 
                 }
-                //stringTmpData = "";
+                //strReadFromCOM = "";
                 AISDataTable.Update();
             }
+            */
         }
 
         private void LinkTableData(List<AISData> AISDataList)
@@ -158,8 +195,5 @@ namespace AISDisplay
             if (xmlManager._serialSettings != mySerialSettings)
                 mySerialSettings = xmlManager._serialSettings;
         }
-
-
     }
-
 }
