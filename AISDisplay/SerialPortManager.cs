@@ -17,8 +17,8 @@ namespace SerialPortListener.Serial
             _currentSerialSettings.PropertyChanged += new PropertyChangedEventHandler(_currentSerialSettings_PropertyChanged);
 
             // If serial ports is found, we select the first found
-            if (_currentSerialSettings.PortNameCollection.Length > 0)
-                _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
+            //if (_currentSerialSettings.PortNameCollection.Length > 0)
+            //    _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
 
         }
 
@@ -61,7 +61,7 @@ namespace SerialPortListener.Serial
 
         void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            
+
             int dataLength = _serialPort.BytesToRead;
             byte[] data = new byte[dataLength];
             int nbrDataRead = _serialPort.Read(data, 0, dataLength);
@@ -87,6 +87,11 @@ namespace SerialPortListener.Serial
                 _serialPort.Close();
 
             // Setting serial port settings
+            if (_currentSerialSettings.PortName == "")
+            {
+                if (_currentSerialSettings.PortNameCollection.Length > 0)
+                    _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
+            }
             _serialPort = new SerialPort(
                 _currentSerialSettings.PortName,
                 _currentSerialSettings.BaudRate,
@@ -97,7 +102,7 @@ namespace SerialPortListener.Serial
             // Subscribe to event and open serial port for data
             _serialPort.DataReceived += new SerialDataReceivedEventHandler(_serialPort_DataReceived);
             _serialPort.Open();
-           
+
         }
 
         /// <summary>

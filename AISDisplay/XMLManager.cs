@@ -23,7 +23,7 @@ namespace AISDisplay
         {
             fileName = "COMSettings.xml";
             Task.Factory.StartNew(() => VerifyXMLFile());
-
+            serialSettings = grabDataFromFile();
         }
 
         public SerialSettings _serialSettings
@@ -66,7 +66,7 @@ namespace AISDisplay
         }
 
         // Define the event handlers.
-        private static void OnChanged(object source, FileSystemEventArgs e) => Task.Delay(5000).ContinueWith(t =>fileChanged(source, e));
+        private static void OnChanged(object source, FileSystemEventArgs e) => Task.Delay(5000).ContinueWith(t => fileChanged(source, e));
 
         private static void OnRenamed(object source, RenamedEventArgs e) => fileRenamed(source, e);
 
@@ -178,6 +178,10 @@ namespace AISDisplay
             writer.WriteEndElement();
         }
 
+        /// <summary>
+        /// Checks if values are up to date and returns true or false if so.
+        /// </summary>
+        /// <returns></returns>
         private static bool xmlValuesNotSet()
         {
             try
@@ -205,7 +209,7 @@ namespace AISDisplay
                 serializeDataToXML(serialSettings);
                 return true;
             }
-            
+
         }
 
         public static void updateNode(SerialSettings _spSettings, String propertyName)
@@ -271,6 +275,27 @@ namespace AISDisplay
             return serialSettings;
         }
 
+        private static SerialSettings grabDataFromFile()
+        {
+           
+            try
+            {
+                SerialSettings tmpFileSettings = new SerialSettings();
+                XDocument xmlDoc = XDocument.Load(fileName);
+                XElement xRootElement = xmlDoc.Root.Element("COMPort");
+                tmpFileSettings.PortName = xRootElement.Element("COMPort_Name").Value;
+                tmpFileSettings.BaudRate = int.Parse(xRootElement.Element("Baud_Rate").Value);
+                tmpFileSettings.DataBits = int.Parse(xRootElement.Element("Data_Bits").Value);
+                tmpFileSettings.Parity = (Parity)Enum.Parse(typeof(Parity), xRootElement.Element("Parity").Value, true);
+                xmlDoc = null;
+                return tmpFileSettings;
+            }
+            catch
+            {
+                return null;
+            }
+           
+        }
     }
 
 }

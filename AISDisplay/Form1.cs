@@ -9,7 +9,6 @@ namespace AISDisplay
 {
     //TODO:: SAVE INCOMING DATA TO TMP FILES
     //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
-    //TODO:: HAVE XML SETTINGS READ AND USED FIRST IF EXISTING 
     public partial class Form1 : Form
     {
         private readonly XMLManager xmlManager = new XMLManager();
@@ -36,19 +35,31 @@ namespace AISDisplay
             catch (ArgumentException e)
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Close();
             }
-            catch(UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException e)
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Close();
+                int tmpCount = 0;
+                foreach (string PortName in _spManager.CurrentSerialSettings.PortNameCollection)
+                {
+                    if (PortName != _spManager.CurrentSerialSettings.PortName)
+                        _spManager.CurrentSerialSettings.PortName = _spManager.CurrentSerialSettings.PortNameCollection[tmpCount];
+                    tmpCount++;
+                }
+
             }
         }
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();
-            mySerialSettings = _spManager.CurrentSerialSettings;
-            XMLManager.serializeDataToXML(mySerialSettings);
+            if (xmlManager._serialSettings != null) {
+                mySerialSettings = xmlManager._serialSettings;
+                _spManager.CurrentSerialSettings = mySerialSettings;
+            }
+            else {
+                mySerialSettings = _spManager.CurrentSerialSettings;
+                XMLManager.serializeDataToXML(mySerialSettings);
+            }
             _spManager.NewSerialDataRecieved += new EventHandler<SerialDataEventArgs>(_spManager_NewSerialDataRecieved);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }
@@ -76,11 +87,11 @@ namespace AISDisplay
             //int maxParseLength = 1000; // maximum text length in text
             //if (stringTmpData.Length > maxParseLength)
 
-                //if(str == "\n" && strReadFromCOM.Contains("\n"))
-                //{
-                //    strListReadFromCOM.Add(strReadFromCOM.Substring(strReadFromCOM.LastIndexOf("\n") + 1));
-                //}
-                if (str.Contains("\n")) //&& !strReadFromCOM.Contains("\n"))
+            //if(str == "\n" && strReadFromCOM.Contains("\n"))
+            //{
+            //    strListReadFromCOM.Add(strReadFromCOM.Substring(strReadFromCOM.LastIndexOf("\n") + 1));
+            //}
+            if (str.Contains("\n")) //&& !strReadFromCOM.Contains("\n"))
             {
                 //Shows the lines generated and should display the same as the NemaFileReader Programm
                 //Debug.Print(strReadFromCOM);
@@ -119,7 +130,7 @@ namespace AISDisplay
 
                 AISDataTable.Update();
             }
-            
+
             /*
             if (strReadFromCOM.Contains("\n"))
             {
