@@ -9,7 +9,7 @@ namespace AISDisplay
 {
     //TODO:: SAVE INCOMING DATA TO TMP FILES
     //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         private readonly XMLManager xmlManager = new XMLManager();
         SerialPortManager _spManager;
@@ -20,7 +20,7 @@ namespace AISDisplay
         private string strReadFromCOM = "";
         List<string> strListReadFromCOM = new List<string>();
 
-        public Form1()
+        public MainWindow()
         {
             try
             {
@@ -191,7 +191,7 @@ namespace AISDisplay
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainWindow_Load(object sender, EventArgs e)
         {
 
         }

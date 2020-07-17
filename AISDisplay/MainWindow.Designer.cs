@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace AISDisplay
 {
-    partial class Form1
+    partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -23,7 +23,7 @@ namespace AISDisplay
             }
             base.Dispose(disposing);
         }
-        private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
+        private void MainWindow_FormClosing(Object sender, FormClosingEventArgs e)
         {
 
             System.Text.StringBuilder messageBoxCS = new System.Text.StringBuilder();
@@ -293,7 +293,7 @@ namespace AISDisplay
             this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // Form1
+            // MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
@@ -305,10 +305,10 @@ namespace AISDisplay
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(300, 300);
-            this.Name = "Form1";
+            this.Name = "MainWindow";
             this.Text = "AIS Display";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             ((System.ComponentModel.ISupportInitialize)(this.AISDataTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yourDataTable)).EndInit();
             this.ResumeLayout(false);
