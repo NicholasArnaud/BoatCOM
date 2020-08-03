@@ -15,8 +15,8 @@ namespace SerialPortListener.Serial
             // Finding installed serial ports on hardware
             _currentSerialSettings.PortNameCollection = SerialPort.GetPortNames();
             _currentSerialSettings.PropertyChanged += new PropertyChangedEventHandler(_currentSerialSettings_PropertyChanged);
-
-            // If serial ports is found, we select the first found
+          
+            // If serial ports are found, we select the first found
             //if (_currentSerialSettings.PortNameCollection.Length > 0)
             //    _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
 
@@ -86,11 +86,15 @@ namespace SerialPortListener.Serial
             if (_serialPort != null && _serialPort.IsOpen)
                 _serialPort.Close();
 
-            // Setting serial port settings
+            // Set serial port settings
             if (_currentSerialSettings.PortName == "")
             {
-                if (_currentSerialSettings.PortNameCollection.Length > 0)
+                if (_currentSerialSettings.PortNameCollection != null)
                     _currentSerialSettings.PortName = _currentSerialSettings.PortNameCollection[0];
+                else
+                {
+
+                }
             }
             _serialPort = new SerialPort(
                 _currentSerialSettings.PortName,

@@ -26,6 +26,10 @@ namespace AISDisplay
             serialSettings = grabDataFromFile();
         }
 
+        ~XMLManager()
+        {
+        }
+
         public SerialSettings _serialSettings
         {
             get { return serialSettings; }

@@ -9,6 +9,8 @@ namespace AISDisplay
 {
     //TODO:: SAVE INCOMING DATA TO TMP FILES
     //TODO:: FEFACTOR HOW INFO IS PULLED INTO THE DISPLAY TABLE
+    //TODO:: FIGURE OUT WHAT BEARING AND HOW TO GET IT
+    //TODO:: APPLICATION DOES NOT UPDATE LIVE IF MODIFING SETTINGS IN COMPORT
     public partial class MainWindow : Form
     {
         private readonly XMLManager xmlManager = new XMLManager();
@@ -49,6 +51,11 @@ namespace AISDisplay
 
             }
         }
+        ~MainWindow()
+        {
+
+        }
+
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();

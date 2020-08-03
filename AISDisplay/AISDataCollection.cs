@@ -122,8 +122,6 @@ public class AISDataCollection : ObservableCollection<AISData>
 
         Parser parser = new Parser();
 
-        List<string> MMSICheckList = new List<string>();
-
         Hashtable rs = parser.Parse(COMPortLine);
 
         if (rs != null)
@@ -150,9 +148,9 @@ public class AISDataCollection : ObservableCollection<AISData>
                 AisData.UTCDateTime = DateTime.Parse(date + " " + time);
             }
             else
-                AisData.UTCDateTime = new DateTime();
-
-            AisData.BRG = (rs["Bearing"] == null) ? (rs["True Bearing"] == null) ? "-" : rs["Bearing"].ToString() : rs["Bearing"].ToString();
+                AisData.UTCDateTime = currentTime;
+            //NOTHING TO GET BRG??
+            AisData.BRG = (rs["bearing"] == null) ? (rs["true bearing"] == null) ? "-" : rs["bearing"].ToString() : rs["bearing"].ToString();
             AisData.MMSI = (rs["MMSI"] == null) ? "-" : rs["MMSI"].ToString();
 
             if (rs["VesselName"] != null)
@@ -168,21 +166,24 @@ public class AISDataCollection : ObservableCollection<AISData>
 
             if (AisData.MMSI != "-" && AisData.CommandLine != "$GPRMC")
                 PrevAISDataItem = AisData;
+
+
+            if (AisData.Lat != "")
+            {
+                int tmpInt2 = AISDataList.FindIndex(a => a.CommandLine == "!AIVDO");
+                if (AisData.CommandLine != "!AIVDO" && tmpInt2 != -1)
+                    AisData.Range = HaversineDistance(Convert.ToDouble(AisData.Lat), Convert.ToDouble(AisData.Lon),
+                       Convert.ToDouble(AISDataList[tmpInt2].Lat), Convert.ToDouble(AISDataList[tmpInt2].Lon));
+                else
+                    AisData.Range = 0;
+            }
+            else
+                AisData.Range = -1;
+
             ExistingUpdatedData(AisData);
         }
 
-        //List<AISData> SortedList = AISDataList.OrderBy(o => o.Range).ToList();
-        //int updatedInt = SortedList.FindIndex(a => a.CommandLine == "!AIVDO");
-
-        //if (updatedInt >= 0)
-        //{
-        //    AISData tmpData = SortedList[updatedInt];
-        //    SortedList.RemoveAt(updatedInt);
-        //    SortedList.Insert(0, tmpData);
-        //}
-        //return SortedList;
-        List<AISData> returnList = CleanAndSortAISDataList();
-        return returnList;
+        return CleanAndSortAISDataList();
     }
 
     private double DegeressToRadians(double degrees)
@@ -203,8 +204,8 @@ public class AISDataCollection : ObservableCollection<AISData>
 
 
     private void ExistingUpdatedData(AISData AisData)
-    {   
-        if(AisData.CommandLine == "$GPRMC")
+    {
+        if (AisData.CommandLine == "$GPRMC")
         {
             AisData.MMSI = PrevAISDataItem.MMSI;
 
@@ -216,37 +217,62 @@ public class AISDataCollection : ObservableCollection<AISData>
         }
         else
         {
+            //IF DATA ALREADY EXISTS THEN WE UPDATE THE CURRENT LIST TO THE NEW INFO THAT IS NOT NULL
             int tmpInt = AISDataList.FindIndex(a => a.MMSI == AisData.MMSI);
-            if (AISDataList[tmpInt].Name != "-")
-                AisData.Name = AISDataList[tmpInt].Name;
-            if (AISDataList[tmpInt].Lon != "")
-                AisData.Lon = AISDataList[tmpInt].Lon;
-            if (AISDataList[tmpInt].Lat != "")
-                AisData.Lat = AISDataList[tmpInt].Lat;
-            if (AISDataList[tmpInt].Heading != "0")
-                AisData.Heading = AISDataList[tmpInt].Heading;
-            if (AISDataList[tmpInt].COG != "")
-                AisData.COG = AISDataList[tmpInt].COG;
-            if (AISDataList[tmpInt].SOG != "")
-                AisData.SOG = AISDataList[tmpInt].SOG;
-            if (AISDataList[tmpInt].BRG != "-")
-                AisData.BRG = AISDataList[tmpInt].BRG;
-            if (AISDataList[tmpInt].UTCDateTime != new DateTime())
-                AisData.UTCDateTime = AISDataList[tmpInt].UTCDateTime;
-
+            if (AisData.Name != "-")
+                AISDataList[tmpInt].Name = AisData.Name;
+            if (AisData.Lon != "")
+                AISDataList[tmpInt].Lon = AisData.Lon;
             if (AisData.Lat != "")
-            {
-                int tmpInt2 = AISDataList.FindIndex(a => a.CommandLine == "!AIVDO");
-                if (AisData.CommandLine != "!AIVDO" && tmpInt2 != -1)
-                    AisData.Range = HaversineDistance(Convert.ToDouble(AisData.Lat), Convert.ToDouble(AisData.Lon),
-                       Convert.ToDouble(AISDataList[tmpInt2].Lat), Convert.ToDouble(AISDataList[tmpInt2].Lon));
-                else
-                    AisData.Range = 0;
-            }
-            else
-                AisData.Range = -1;
+                AISDataList[tmpInt].Lat = AisData.Lat;
+            if (AisData.Heading != "0" || AisData.Heading != "511")
+                AISDataList[tmpInt].Heading = AisData.Heading;
+            if (AisData.COG != "")
+                AISDataList[tmpInt].COG = AisData.COG;
+            if (AisData.SOG != "")
+                AISDataList[tmpInt].SOG = AisData.SOG;
+            if (AisData.BRG != "-")
+                AISDataList[tmpInt].BRG = AisData.BRG;
+            if (AisData.Range != -1 || AisData.Range != 0)
+                AISDataList[tmpInt].Range = AisData.Range;
 
-            AISDataList[tmpInt] = AisData;
+
+
+            AISDataList[tmpInt].UTCDateTime = AisData.UTCDateTime;
+
+
+
+            //int tmpInt = AISDataList.FindIndex(a => a.MMSI == AisData.MMSI);
+            //if (AISDataList[tmpInt].Name != "-" && AisData.Name == "-")
+            //    AisData.Name = AISDataList[tmpInt].Name;
+            //if (AISDataList[tmpInt].Lon != "")
+            //    AisData.Lon = AISDataList[tmpInt].Lon;
+            //if (AISDataList[tmpInt].Lat != "")
+            //    AisData.Lat = AISDataList[tmpInt].Lat;
+            //if (AISDataList[tmpInt].Heading != "0")
+            //    AisData.Heading = AISDataList[tmpInt].Heading;
+            //if (AISDataList[tmpInt].COG != "")
+            //    AisData.COG = AISDataList[tmpInt].COG;
+            //if (AISDataList[tmpInt].SOG != "")
+            //    AisData.SOG = AISDataList[tmpInt].SOG;
+            //if (AISDataList[tmpInt].BRG != "-")
+            //    AisData.BRG = AISDataList[tmpInt].BRG;
+            //if (AISDataList[tmpInt].UTCDateTime != new DateTime())
+            //    AisData.UTCDateTime = AISDataList[tmpInt].UTCDateTime;
+
+            //if (AisData.Lat != "")
+            //{
+            //    int tmpInt2 = AISDataList.FindIndex(a => a.CommandLine == "!AIVDO");
+            //    if (AisData.CommandLine != "!AIVDO" && tmpInt2 != -1)
+            //        AisData.Range = HaversineDistance(Convert.ToDouble(AisData.Lat), Convert.ToDouble(AisData.Lon),
+            //           Convert.ToDouble(AISDataList[tmpInt2].Lat), Convert.ToDouble(AISDataList[tmpInt2].Lon));
+            //    else
+            //        AisData.Range = 0;
+            //}
+            //else
+            //    AisData.Range = -1;
+
+            //AISDataList[tmpInt] = AisData;
 
         }
     }
@@ -274,7 +300,7 @@ public class AISDataCollection : ObservableCollection<AISData>
             {
                 ToDeleteList.Add(data);
             }
-            if((data.Name == "-" || data.Range == -1) && (data.Lat == "" && data.Lon == "") || (data.SOG == "" && data.COG == ""))
+            if ((data.Name == "-" || data.Range == -1) && (data.Lat == "" && data.Lon == "") || (data.SOG == "" && data.COG == ""))
             {
                 ToDeleteList.Add(data);
             }
