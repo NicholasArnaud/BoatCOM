@@ -172,8 +172,17 @@ public class AISDataCollection : ObservableCollection<AISData>
             {
                 int tmpInt2 = AISDataList.FindIndex(a => a.CommandLine == "!AIVDO");
                 if (AisData.CommandLine != "!AIVDO" && tmpInt2 != -1)
+                {
                     AisData.Range = HaversineDistance(Convert.ToDouble(AisData.Lat), Convert.ToDouble(AisData.Lon),
                        Convert.ToDouble(AISDataList[tmpInt2].Lat), Convert.ToDouble(AISDataList[tmpInt2].Lon));
+                    AisData.BRG = RadiansToDegrees(Bearing(Convert.ToDouble(AisData.Lat), Convert.ToDouble(AisData.Lon),
+                       Convert.ToDouble(AISDataList[tmpInt2].Lat), Convert.ToDouble(AISDataList[tmpInt2].Lon))).ToString();
+
+                    //ADDS THE (ASCII #176) DEGREE SYMBOL TO THE END OF THE STRING
+                    string ascii = Convert.ToChar(176).ToString();
+                    AisData.BRG += ascii;
+                }
+                    
                 else
                     AisData.Range = 0;
             }
@@ -186,22 +195,35 @@ public class AISDataCollection : ObservableCollection<AISData>
         return CleanAndSortAISDataList();
     }
 
-    private double DegeressToRadians(double degrees)
+    private double DegreesToRadians(double degrees)
     {
         return degrees * Math.PI / 180;
     }
+    private short RadiansToDegrees(double radians)
+    {
+        return Convert.ToInt16(radians / Math.PI * 180);
+    }
+
     private float HaversineDistance(double lat1, double lon1, double lat2, double lon2)
     {
         float earthRad = 6372.8f;
-        double dLat = DegeressToRadians(lat2 - lat1);
-        double dLon = DegeressToRadians(lon2 - lon1);
+        double dLat = DegreesToRadians(lat2 - lat1);
+        double dLon = DegreesToRadians(lon2 - lon1);
         double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-            Math.Cos(DegeressToRadians(lat1)) * Math.Cos(DegeressToRadians(lat2)) *
+            Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
             Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
         float c = (float)(2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)));
         return earthRad * c;
     }
 
+    private double Bearing(double lat1, double lon1, double lat2, double lon2)
+    {
+        double x = Math.Cos(DegreesToRadians(lat1)) * Math.Sin(DegreesToRadians(lat2)) - Math.Sin(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) * Math.Cos(DegreesToRadians(lon2 - lon1));
+        double y = Math.Sin(DegreesToRadians(lon2 - lon1)) * Math.Cos(DegreesToRadians(lat2));
+
+        // Math.Atan2 can return negative value, 0 <= output value < 2*PI expected 
+        return (Math.Atan2(y, x) + Math.PI * 2) % (Math.PI * 2);
+    }
 
     private void ExistingUpdatedData(AISData AisData)
     {
