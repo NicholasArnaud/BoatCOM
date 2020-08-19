@@ -115,9 +115,8 @@ public class AISDataCollection : ObservableCollection<AISData>
     /// </summary>
     /// <param name="COMPortLine"></param>
     /// <returns></returns>
-    public List<AISData> ParseToTextFromCOM(string COMPortLine)
+    public AISData ParseToTextFromCOM(string COMPortLine)
     {
-        DateTime currentTime = DateTime.Now;
         CultureInfo culture = new CultureInfo("en-US");
 
         Parser parser = new Parser();
@@ -148,9 +147,8 @@ public class AISDataCollection : ObservableCollection<AISData>
                 AisData.UTCDateTime = DateTime.Parse(date + " " + time);
             }
             else
-                AisData.UTCDateTime = currentTime;
-            //NOTHING TO GET BRG??
-            AisData.BRG = (rs["bearing"] == null) ? (rs["true bearing"] == null) ? "-" : rs["bearing"].ToString() : rs["bearing"].ToString();
+                AisData.UTCDateTime = DateTime.UtcNow;
+            //AisData.BRG = (rs["bearing"] == null) ? (rs["true bearing"] == null) ? "-" : rs["bearing"].ToString() : rs["bearing"].ToString();
             AisData.MMSI = (rs["MMSI"] == null) ? "-" : rs["MMSI"].ToString();
 
             if (rs["VesselName"] != null)
@@ -182,7 +180,7 @@ public class AISDataCollection : ObservableCollection<AISData>
                     string ascii = Convert.ToChar(176).ToString();
                     AisData.BRG += ascii;
                 }
-                    
+
                 else
                     AisData.Range = 0;
             }
@@ -190,9 +188,10 @@ public class AISDataCollection : ObservableCollection<AISData>
                 AisData.Range = -1;
 
             ExistingUpdatedData(AisData);
+            return AisData;
         }
-
-        return CleanAndSortAISDataList();
+        return null;
+        //return CleanAndSortAISDataList();
     }
 
     private double DegreesToRadians(double degrees)
@@ -247,7 +246,7 @@ public class AISDataCollection : ObservableCollection<AISData>
                 AISDataList[tmpInt].Lon = AisData.Lon;
             if (AisData.Lat != "")
                 AISDataList[tmpInt].Lat = AisData.Lat;
-            if (AisData.Heading != "0" || AisData.Heading != "511")
+            if (AisData.Heading != "511")
                 AISDataList[tmpInt].Heading = AisData.Heading;
             if (AisData.COG != "")
                 AISDataList[tmpInt].COG = AisData.COG;
@@ -255,7 +254,7 @@ public class AISDataCollection : ObservableCollection<AISData>
                 AISDataList[tmpInt].SOG = AisData.SOG;
             if (AisData.BRG != "-")
                 AISDataList[tmpInt].BRG = AisData.BRG;
-            if (AisData.Range != -1 || AisData.Range != 0)
+            if (AisData.Range > 0.01f)
                 AISDataList[tmpInt].Range = AisData.Range;
 
 
@@ -299,7 +298,7 @@ public class AISDataCollection : ObservableCollection<AISData>
         }
     }
 
-    private List<AISData> CleanAndSortAISDataList()
+    public List<AISData> CleanAndSortAISDataList()
     {
         //ORDER LIST TO GET THE CLOSEST VESSELS FIRST FROM TOP TO BOTTOM
         List<AISData> SortedList = AISDataList.OrderBy(o => o.Range).ToList();
@@ -318,19 +317,34 @@ public class AISDataCollection : ObservableCollection<AISData>
         List<AISData> ToDeleteList = new List<AISData>();
         foreach (AISData data in SortedList)
         {
-            if ((data.Range == -1 || data.RangeString == "") && data.Name == "-")
-            {
+            if (data.Name == "-" && (DateTime.UtcNow.Subtract(data.UTCDateTime) >= new TimeSpan(0, 2, 0) + DateTime.UtcNow.TimeOfDay) || (data.Range == -1 && data.Name == "-"))
                 ToDeleteList.Add(data);
-            }
-            if ((data.Name == "-" || data.Range == -1) && (data.Lat == "" && data.Lon == "") || (data.SOG == "" && data.COG == ""))
-            {
+            else if ((DateTime.UtcNow.Subtract(data.UTCDateTime) >= new TimeSpan(0, 2, 0) + DateTime.UtcNow.TimeOfDay) && (data.Lat == "" && data.Lon == "") || (data.SOG == "" && data.COG == ""))
                 ToDeleteList.Add(data);
-            }
+            if(DateTime.UtcNow.Subtract(data.UTCDateTime) >= new TimeSpan(0,20,0) + DateTime.UtcNow.TimeOfDay)
+                ToDeleteList.Add(data);
         }
+
+        List<string> removedMMSIList = new List<string>();
         foreach (AISData data in ToDeleteList)
         {
             SortedList.Remove(data);
+            AISDataList.Remove(data);
+
+            removedMMSIList.Add(data.MMSI);
         }
+        foreach (string data in removedMMSIList)
+            MMSICheckList.Remove(data);
+
+
+        //if (AISDataList.Count >= 40)
+        //    AISDataList.RemoveRange(35, 5);
+        //List<string> replacementList = new List<string>();
+        //foreach (AISData data in AISDataList)
+        //{
+        //    replacementList.Add(data.MMSI);
+        //}
+        //MMSICheckList = replacementList;
         return SortedList;
     }
 

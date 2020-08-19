@@ -95,7 +95,7 @@ namespace AISDisplay
             this._Lon,
             this._UTCDateTime});
             this.AISDataTable.Enabled = false;
-            this.AISDataTable.Location = new System.Drawing.Point(0, 120);
+            this.AISDataTable.Location = new System.Drawing.Point(13, 117);
             this.AISDataTable.Margin = new System.Windows.Forms.Padding(4);
             this.AISDataTable.MultiSelect = false;
             this.AISDataTable.Name = "AISDataTable";
@@ -107,7 +107,7 @@ namespace AISDisplay
             this.AISDataTable.RowTemplate.ReadOnly = true;
             this.AISDataTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.AISDataTable.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.AISDataTable.Size = new System.Drawing.Size(2588, 1283);
+            this.AISDataTable.Size = new System.Drawing.Size(2562, 1052);
             this.AISDataTable.TabIndex = 0;
             this.AISDataTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 

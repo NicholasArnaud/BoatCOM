@@ -156,7 +156,7 @@ namespace AISDisplay
             writer.WriteEndElement();
             //NAME
             writer.WriteStartElement("COMPort_Name");
-            writer.WriteString(serialSettings.PortName);
+            writer.WriteString(serialSettings.PortNameCollection[0]);
             writer.WriteEndElement();
             //BAUDRATE COLLECTION
             writer.WriteStartElement("Baud_Collection");

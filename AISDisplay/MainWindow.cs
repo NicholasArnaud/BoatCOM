@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 //using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
@@ -59,11 +61,13 @@ namespace AISDisplay
         private void UserInitialization()
         {
             _spManager = new SerialPortManager();
-            if (xmlManager._serialSettings != null) {
+            if (xmlManager._serialSettings != null)
+            {
                 mySerialSettings = xmlManager._serialSettings;
                 _spManager.CurrentSerialSettings = mySerialSettings;
             }
-            else {
+            else
+            {
                 mySerialSettings = _spManager.CurrentSerialSettings;
                 XMLManager.serializeDataToXML(mySerialSettings);
             }
@@ -91,20 +95,40 @@ namespace AISDisplay
             //This application is connected to a GPS sending ASCCI characters, so data is converted to text
             string str = Encoding.ASCII.GetString(e.Data);
 
-            //int maxParseLength = 1000; // maximum text length in text
-            //if (stringTmpData.Length > maxParseLength)
 
-            //if(str == "\n" && strReadFromCOM.Contains("\n"))
-            //{
-            //    strListReadFromCOM.Add(strReadFromCOM.Substring(strReadFromCOM.LastIndexOf("\n") + 1));
-            //}
-            if (str.Contains("\n")) //&& !strReadFromCOM.Contains("\n"))
+            if (str.Contains("\n"))
             {
-                //Shows the lines generated and should display the same as the NemaFileReader Programm
-                //Debug.Print(strReadFromCOM);
+                if (strReadFromCOM.Contains("\r") && strReadFromCOM != "")
+                {
 
-                strListReadFromCOM.Add(strReadFromCOM);
-                strReadFromCOM = "";
+                    
+                    //string[] multiMessage = strReadFromCOM.Split('!');
+                    //if (multiMessage.Length > 2 && multiMessage.Last().Contains("AI"))
+                    //{
+                    //    foreach (string msg in multiMessage)
+                    //    {
+                    //        string tmp = "!";
+                    //        if (msg == "")
+                    //            continue;
+                    //        tmp += msg;
+                    //        //Shows the lines generated and should display the same as the NemaFileReader Program
+                    //        Debug.Print(tmp);
+                    //        AISDataCollectionClass.ParseToTextFromCOM(tmp);
+                    //    }
+
+                    //}
+                    //else
+                    //{
+                        //Shows the lines generated and should display the same as the NemaFileReader Program
+                        Debug.Print(strReadFromCOM);
+                        AISDataCollectionClass.ParseToTextFromCOM(strReadFromCOM);
+                    //}
+
+
+
+                    UpdateTable(AISDataCollectionClass.CleanAndSortAISDataList());
+                    strReadFromCOM = "";
+                }
             }
             else
             {
@@ -112,60 +136,64 @@ namespace AISDisplay
             }
         }
 
-        private void UpdateTable()
+        private void UpdateTable(List<AISData> tblData)
         {
-            if (strListReadFromCOM.Count > 0)
-            {
+            //foreach (string LineInfo in strListReadFromCOM)
+            //{
+            //AISDataList = AISDataCollectionClass.ParseToTextFromCOM(LineInfo);
 
-                foreach (string LineInfo in strListReadFromCOM)
-                {
-                    if (!LineInfo.Contains("\r"))
-                        continue;
-                    AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(LineInfo).Count > 0) ? AISDataCollectionClass.ParseToTextFromCOM(LineInfo) : new List<AISData>();
-                    if (AISDataList.Count == 0)
-                        continue;
-                    YourAISShipData = AISDataList[0];
-                    AISDataList.RemoveAt(0);
-                    if (AISDataList.Count >= 1)
-                        LinkTableData(AISDataList);
-                    if (YourAISShipData != null)
-                        LinkTableData(YourAISShipData);
+            // if (AISDataList.Count == 0)
+            // continue;
 
-                }
-                if (strListReadFromCOM.Count >= 35)
-                    strListReadFromCOM.RemoveRange(0, 20);
+            //YourAISShipData = AISDataList[0];
+            //AISDataList.RemoveAt(0);
+            //if (AISDataList.Count >= 1)
+            //    LinkTableData(AISDataList);
+            //if (YourAISShipData != null)
+            //    LinkTableData(YourAISShipData);
+            //AISDataList = null;
+            //}
+            if (tblData.Count == 0)
+                return;
+            LinkTableData(tblData[0]);
+            tblData.RemoveAt(0);
 
-                AISDataTable.Update();
-            }
+            if (tblData.Count == 0)
+                return;
+            LinkTableData(tblData);
 
-            /*
-            if (strReadFromCOM.Contains("\n"))
-            {
-                string[] dataToRead = strReadFromCOM.Split('\n');
-                foreach (string i in dataToRead)
-                {
-                    //CHECK TO ENSURE STRING CAPTURED THE ENTIRE LINE TO BE PARSED
-                    // IF CHECK LOOKS FOR THE FOLLOWING NMEA SENTENCES:
-                    //!AIVDO, !AIVDM, !BSVDM, !BSVDO, $GPRMC, $AIALR, $PFEC, $AITXT
-                    if (i.Contains("\r") &&
-                        (i.Contains("!") || i.Contains("$")))
-                    {
-                        AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0) ? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
-                        if (AISDataList.Count == 0)
-                            return;
-                        YourAISShipData = AISDataList[0];
-                        AISDataList.RemoveAt(0);
-                        if (AISDataList.Count >= 1)
-                            LinkTableData(AISDataList);
-                        if (YourAISShipData != null)
-                            LinkTableData(YourAISShipData);
-                    }
+            AISDataTable.Update();
 
-                }
-                //strReadFromCOM = "";
-                AISDataTable.Update();
-            }
-            */
+
+
+
+            //if (strReadFromCOM.Contains("\n"))
+            //{
+            //    string[] dataToRead = strReadFromCOM.Split('\n');
+            //    foreach (string i in dataToRead)
+            //    {
+            //        //CHECK TO ENSURE STRING CAPTURED THE ENTIRE LINE TO BE PARSED
+            //        // IF CHECK LOOKS FOR THE FOLLOWING NMEA SENTENCES:
+            //        //!AIVDO, !AIVDM, !BSVDM, !BSVDO, $GPRMC, $AIALR, $PFEC, $AITXT
+            //        if (i.Contains("\r") &&
+            //            (i.Contains("!") || i.Contains("$")))
+            //        {
+            //            AISDataList = (AISDataCollectionClass.ParseToTextFromCOM(i).Count > 0) ? AISDataCollectionClass.ParseToTextFromCOM(i) : new List<AISData>();
+            //            if (AISDataList.Count == 0)
+            //                return;
+            //            YourAISShipData = AISDataList[0];
+            //            AISDataList.RemoveAt(0);
+            //            if (AISDataList.Count >= 1)
+            //                LinkTableData(AISDataList);
+            //            if (YourAISShipData != null)
+            //                LinkTableData(YourAISShipData);
+            //        }
+
+            //    }
+            //    //strReadFromCOM = "";
+            //    AISDataTable.Update();
+            //}
+
         }
 
         private void LinkTableData(List<AISData> AISDataList)
@@ -215,7 +243,7 @@ namespace AISDisplay
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            UpdateTable();
+            //UpdateTable();
             if (xmlManager._serialSettings != mySerialSettings)
                 mySerialSettings = xmlManager._serialSettings;
         }
